@@ -1,0 +1,503 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Pebble",
+  "scopeName": "source.peb",
+  "fileTypes": [".peb"],
+  "patterns": [{ "include": "#statement" }],
+  "repository": {
+    "statement": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#declaration" },
+        { "include": "#keyword" },
+        { "include": "#expression" },
+        { "include": "#injunction" },
+        { "include": "#control_statement" }
+      ]
+    },
+    "keyword": {
+      "name": "keyword.control",
+      "match": "((?<!\\S);?\\}?@(implement|public|model|use|type|let|include|constant)\\b)|(\\b(?<!@)(if|else|fn|for|enum|while|break|print|crash|try|restore|return|continue|delete|await|async|as)\\b)"
+    },
+    "declaration": {
+      "patterns": [
+        { "include": "#let_declaration" },
+        { "include": "#function_declaration" },
+        { "include": "#model_declaration" },
+        { "include": "#implement_declaration" },
+        { "include": "#enum_declaration" },
+        { "include": "#type_declaration" },
+        { "include": "#public_declaration" },
+        { "include": "#use_declaration" },
+        { "include": "#include_declaration" }
+      ]
+    },
+    "function_declaration": {
+      "name": "meta.function-declaration",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(fn\\s+)((?!\\d)\\w+\\s*)(<(.*)>)?",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.public"
+        },
+        "2": {
+          "name": "keyword.control"
+        },
+        "3": {
+          "name": "entity.name.function"
+        },
+        "5": {
+          "name": "entity.name.type.generic"
+        }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#function_parameter_list" },
+        { "include": "#function_return_type" },
+        { "include": "#open_block" }
+      ],
+      "end": "\\}"
+    },
+    "model_declaration": {
+      "name": "meta.model",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(@model\\s+)((?!\\d)\\w+\\s*)(<(.*)>)?\\s*\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.public"
+        },
+        "2": {
+          "name": "keyword.control.model"
+        },
+        "3": {
+          "name": "entity.name.class"
+        },
+        "5": {
+          "name": "entity.name.class"
+        }
+      },
+      "patterns": [{ "include": "#comment" }, { "include": "#model_property" }],
+      "end": "\\}"
+    },
+    "model_property": {
+      "name": "meta.property",
+      "begin": "(@public\\s+)?",
+      "end": ",|(?=\\})",
+      "patterns": [{ "include": "#typed_variable" }],
+      "beginCaptures": {
+        "1": { "name": "keyword.control" }
+      }
+    },
+    "implement_declaration": {
+      "name": "meta.implementation",
+      "begin": "(?<!\\S);?\\}?(@implement\\s+)((?!\\d)\\w+\\s*)(<(.*)>\\s*)?\\{\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.implement"
+        },
+        "2": {
+          "name": "entity.name.type"
+        },
+        "4": {
+          "name": "entity.name.type"
+        }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#method_declaration" }
+      ],
+      "end": "\\}"
+    },
+    "method_declaration": {
+      "name": "meta.method-declaration",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?((?!\\d)\\w+\\s*)(<(.*)>)?",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.public"
+        },
+        "2": {
+          "name": "entity.name.function"
+        },
+        "4": {
+          "name": "entity.name.type.generic"
+        }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#open_block" },
+        { "include": "#function_parameter_list" },
+        { "include": "#function_return_type" }
+      ],
+      "end": "\\}"
+    },
+    "function_parameter_list": {
+      "name": "meta.function-parameter-list",
+      "begin": "\\(",
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#typed_parameter" }
+      ],
+      "end": "\\)"
+    },
+    "type": {
+      "name": "meta.type",
+      "patterns": [
+        { "include": "#generic_type" },
+        { "include": "#regular_type" }
+      ]
+    },
+    "generic_type": {
+      "name": "meta.type.generic",
+      "patterns": [
+        { "include": "#type" },
+        { "match": "\\s*\\<\\s*" },
+        { "include": "#type" },
+        { "match": "\\s*\\>\\s*" }
+      ]
+    },
+    "regular_type": {
+      "name": "meta.regular-type",
+      "begin": "((?<![\\d@])\\w+\\s*)(<(.*)>\\s*)?",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.class meta.type.label"
+        },
+        "3": {
+          "name": "entity.name.class meta.type.generic"
+        }
+      },
+      "end": "(?=[;,\\:\\{\\(\\|)\\}])"
+    },
+    "typed_parameter": {
+      "name": "meta.type.parameter",
+      "begin": "",
+      "patterns": [{ "include": "#comment" }, { "include": "#typed_variable" }],
+      "end": "(?=[;,\\:\\{\\(\\|)\\}])"
+    },
+    "typed_variable": {
+      "name": "meta.variable.types",
+      "match": "((?<![\\d@])\\w+\\s*)(<(.*)>\\s*)?:\\s*((?<![\\d@])\\w+\\s*)",
+      "captures": {
+        "1": {
+          "name": "entity.name.class meta.type.label"
+        },
+        "3": {
+          "name": "entity.name.class meta.type.generic"
+        },
+        "4": {
+          "name": "variable.name"
+        }
+      }
+    },
+    "function_return_type": {
+      "name": "meta.return-type",
+      "begin": "\\s*\\=\\>\\s*",
+      "patterns": [{ "include": "#type" }],
+      "end": "(?=[;,\\:\\{\\(\\|)\\}])"
+    },
+    "open_block": {
+      "name": "meta.function-body",
+      "begin": "\\{\\s*",
+      "patterns": [{ "include": "#decl_block" }],
+      "end": "(?=\\})"
+    },
+    "decl_block": {
+      "name": "meta.decl-block",
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#declaration" },
+        { "include": "#keyword" },
+        { "include": "#expression" },
+        { "include": "#control_statement" }
+      ]
+    },
+    "let_declaration": {
+      "name": "meta.let-dec",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(@let\\s+)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.public"
+        },
+        "2": {
+          "name": "keyword.injuction.let"
+        }
+      },
+      "patterns": [
+        { "include": "#single_variable" },
+        { "include": "#comment" }
+      ],
+      "end": ";"
+    },
+    "single_variable": {
+      "begin": "\\s*",
+      "patterns": [
+        { "include": "#typed_variable" },
+        { "include": "#identifier" },
+        { "include": "#var_init" }
+      ],
+      "end": "\\s*(?=;)"
+    },
+    "var_init": {
+      "begin": "\\s*\\=\\s*",
+      "patterns": [{ "include": "#expression" }],
+      "end": "(?=\\s*(?=;))"
+    },
+    "enum_declaration": {
+      "name": "meta.enum",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(enum\\s+)((?!\\d)\\w+\\s*)(<(.*)>\\s*)?\\{\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control"
+        },
+        "2": {
+          "name": "keyword.control"
+        },
+        "3": {
+          "name": "entity.name.type.enum"
+        },
+        "5": {
+          "name": "entity.name.type.generic"
+        }
+      },
+      "patterns": [{ "include": "#comment" }, { "include": "#enum_variant" }],
+      "end": "\\}"
+    },
+    "enum_variant": {
+      "name": "meta.enum-variant",
+      "begin": "\\s*",
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "name": "constant.language.variant",
+          "match": "((?!\\d)\\w+\\s*)\\s*(?=(,|(?=\\})))"
+        },
+        { "include": "#method_declaration" }
+      ],
+      "end": ",|(?=\\})"
+    },
+    "type_declaration": {
+      "name": "meta.type-dec",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(@type\\s+)((?<![\\d@])\\w+\\s*)(<(.*)>\\s*)?(\\s*\\=\\s*)?",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control"
+        },
+        "2": {
+          "name": "keyword.injunction"
+        },
+        "3": {
+          "name": "entity.name.type"
+        },
+        "5": {
+          "name": "entity.name.type.generic"
+        }
+      },
+      "patterns": [{ "include": "#type" }],
+      "end": ";"
+    },
+    "use_declaration": {
+      "name": "meta.use",
+      "begin": "(?<!\\S);?\\}?(@public\\s+)?(@use\\s*)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control"
+        },
+        "2": {
+          "name": "keyword.control"
+        }
+      },
+      "patterns": [
+        { "include": "#use_list" },
+        { "name": "keyword.control.as", "match": "\\s*(\\*|as|from)\\s*" },
+        { "include": "#identifier" },
+        { "include": "#string" }
+      ],
+      "end": ";"
+    },
+    "use_list": {
+      "name": "meta.use-list",
+      "begin": "\\{",
+      "patterns": [{ "include": "#comment" }, { "include": "#used_atom" }],
+      "end": "\\}"
+    },
+    "used_atom": {
+      "name": "meta.use-rename",
+      "begin": "\\s*",
+      "patterns": [
+        { "include": "#comment" },
+        { "name": "keyword.control.asterisk", "match": "\\s*\\*\\s*" },
+        { "name": "keyword.control.as", "match": "\\s*as\\s*" },
+        { "include": "#identifier" }
+      ],
+      "end": ",|(?=\\})"
+    },
+    "expression": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#literal" },
+        { "include": "#string" },
+        { "include": "#character" },
+        { "include": "#regex" },
+        { "include": "#function_call" },
+        { "include": "#enum_read" },
+        { "include": "function_expression" },
+        { "include": "#type-label" },
+        { "include": "#identifier" }
+      ]
+    },
+    "string": {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "include": "#character_escape" },
+        { "include": "#string_expression" }
+      ]
+    },
+    "character": {
+      "name": "string.quoted.single",
+      "begin": "'",
+      "end": "'",
+      "patterns": [{ "include": "#character_escape" }]
+    },
+    "string_expression": {
+      "name": "meta.template.expression",
+      "begin": "#\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.expression.embedded_expression_start"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.expression.embedded_expression_end"
+        }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#literal" },
+        { "include": "#string" },
+        { "include": "#character" },
+        { "include": "#regex" },
+        { "include": "function_expression" },
+        { "include": "#type-label" },
+        { "include": "#identifier" }
+      ],
+      "contentName": "meta.embedded.line"
+    },
+    "character_escape": {
+      "name": "constant.character.escape",
+      "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|u\\{[0-9A-Fa-f]+\\}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+    },
+    "literal": {
+      "patterns": [
+        { "include": "#numeric_literal" },
+        { "include": "#boolean_literal" },
+        { "include": "#nothing_literal" },
+        { "include": "#self_literal" },
+        { "include": "#super_literal" }
+      ]
+    },
+    "numeric_literal": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex",
+          "match": "\\b(?<!\\$)0(?:x|X)[0-9A-Fa-f]+(n)?\\b(?!\\$)"
+        },
+        {
+          "name": "constant.numeric.binary",
+          "match": "\\b(?<!\\$)0(?:b|B)[0-1]+(n)?\\b(?!\\$)"
+        },
+        {
+          "name": "constant.numeric.octal",
+          "match": "\\b(?<!\\$)0(?:o|O)[0-7]+(n)?\\b(?!\\$)"
+        },
+        {
+          "name": "constant.numeric.decimal",
+          "match": "\\b\\d+((\\.\\d+)|n)?"
+        },
+        {
+          "name": "constant.numeric.exponent",
+          "match": "\\b\\d+e\\d+\\b(?!\\$)"
+        }
+      ]
+    },
+    "boolean_literal": {
+      "name": "constant.language.boolean",
+      "match": "(\\b(?<!\\.\\s*)(true|false)\\b)"
+    },
+    "self_literal": {
+      "name": "constant.language.self",
+      "match": "(\\b(?<!\\.\\s*)(self)\\b)|(\\b(?<!\\.\\s*)(lib)\\b)"
+    },
+    "nothing_literal": {
+      "name": "constant.language.nothing",
+      "match": "(\\b(?<!\\.\\s*)(nothing)\\b)"
+    },
+    "super_literal": {
+      "name": "constant.language.super",
+      "match": "(\\b(?<!\\.\\s*)(super)\\b)"
+    },
+    "function_call": {
+      "name": "entity.name.function",
+      "match": "((?<![\\d@])\\w+\\s*)(?=\\()"
+    },
+    "enum_read": {
+      "name": "meta.type.enum-read",
+      "match": "((?<![\\d@])\\w+\\s*)::\\s*((?<![\\d@])\\w+\\s*)",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.enum"
+        },
+        "2": {
+          "name": "constant.language.enum"
+        }
+      }
+    },
+    "identifier": {
+      "name": "variable.identifier",
+      "match": "((?<![\\d@])\\w+\\s*)"
+    },
+    "control_statement": {
+      "patterns": [
+        { "include": "#do_while_statement" },
+        { "include": "#while_loop_statement" },
+        { "include": "#if_statement" },
+        { "include": "#match_statement" },
+        { "include": "#for_loop_statement" },
+        { "include": "#try_restore_statement" },
+        { "include": "#crash_statement" },
+        { "include": "#return_statement" },
+        { "include": "#break_statement" },
+        { "include": "#continue_statement" },
+        {
+          "begin": "(?=\\{)",
+          "patterns": [{ "include": "#open_block" }],
+          "end": "\\}"
+        }
+      ]
+    },
+    "comment": {
+      "name": "comment",
+      "patterns": [
+        { "include": "#block_comment" },
+        { "include": "#line_comment" },
+        { "include": "#doc_comment" }
+      ]
+    },
+    "block_comment": {
+      "name": "comment.block",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    "line_comment": {
+      "name": "comment.line",
+      "begin": "//",
+      "end": "\\n"
+    },
+    "doc_comment": {
+      "name": "comment.documentation",
+      "begin": "^(\\s*)#",
+      "end": "\n"
+    }
+  }
+}

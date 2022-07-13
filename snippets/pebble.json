@@ -1,0 +1,17 @@
+{
+  "function": {
+    "prefix": "fn",
+    "description": "Create a new function declaration with parameters",
+    "body": ["fn ${1:name}() {", "  $2", "}"]
+  },
+  "function-parametered": {
+    "prefix": "fnp",
+    "description": "Create a new function declaration with parameters",
+    "body": ["fn ${1:name}(${2:paramType}:${3:param}) {", "  $4", "}"]
+  },
+  "New Model": {
+    "prefix": "@model",
+    "body": [],
+    "description": ""
+  }
+}

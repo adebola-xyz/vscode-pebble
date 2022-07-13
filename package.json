@@ -1,0 +1,45 @@
+{
+  "name": "peb",
+  "displayName": "Pebble",
+  "description": "The Pebble Programming Language",
+  "icon": "./icon.png",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.69.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adebola-xyz/pebble"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "pebble",
+        "aliases": [
+          "Pebble",
+          "pebble"
+        ],
+        "extensions": [
+          ".peb"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "pebble",
+        "scopeName": "source.peb",
+        "path": "./syntaxes/pebble.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "pebble",
+        "path": "./snippets/pebble.json"
+      }
+    ]
+  }
+}

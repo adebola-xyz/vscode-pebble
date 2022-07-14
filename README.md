@@ -2,6 +2,7 @@
 
 This extension provides development features for the Pebble Programming language, including code completion, syntax highlighting and type definitions.
 
+> TEMPLATE FOR VSCODE EXTENSIONS
 ## Features
 
 For example if there is an image subfolder under your extension project workspace:
